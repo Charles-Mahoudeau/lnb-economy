@@ -123,6 +123,30 @@ class HoldemTest {
     }
 
     @Test
+    fun `each player sees only their own cards until the callers show theirs`() {
+        val round = round("As Qs 3c  Kd Qd 2h  5h 7c 9s  Jh 3d")
+        round.sit(0, a, "A", 10)
+        round.sit(1, b, "B", 10)
+        round.until(HoldemRound.Phase.DECISION)
+        fun seen(seat: Int, by: Int) = round.script.cards.filter { it.seat == seat }.map { it.seenBy(by) }
+        assertEquals(Cards.parseAll("As Kd"), seen(0, by = 0))
+        assertEquals(listOf(Cards.HIDDEN, Cards.HIDDEN), seen(0, by = 1))
+        assertEquals(listOf(Cards.HIDDEN, Cards.HIDDEN), seen(1, by = -1))
+        assertEquals(listOf(Cards.HIDDEN, Cards.HIDDEN), seen(HoldemRound.DEALER, by = 0))
+        assertEquals(Cards.parseAll("5h 7c 9s"), seen(HoldemRound.BOARD, by = -1))
+
+        round.call(a)
+        round.fold(b)
+        round.ticks(1)
+        // A called: their hand is turned for all at the showdown. B folded: theirs stays face down.
+        assertEquals(Cards.parseAll("As Kd"), seen(0, by = 1))
+        assertEquals(listOf(Cards.HIDDEN, Cards.HIDDEN), seen(1, by = 0))
+        val turned = round.script.cards.filter { it.seat == 0 }.map { it.flipAt }.distinct().single()
+        val dealerLast = round.script.cards.filter { it.seat == HoldemRound.DEALER }.maxOf { it.flipAt }
+        assertEquals(dealerLast, turned)
+    }
+
+    @Test
     fun `a dealer who doesn't qualify pays the ante and gives the call back`() {
         // A: As Kd. Dealer: 3c 2h. Board: 5h 7c 9s, then Jh Qd: nothing pairs.
         val round = round("As 3c Kd 2h  5h 7c 9s  Jh Qd")

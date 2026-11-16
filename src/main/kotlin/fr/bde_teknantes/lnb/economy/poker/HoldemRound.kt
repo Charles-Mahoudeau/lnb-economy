@@ -41,10 +41,17 @@ class HoldemRound(private val shuffled: () -> List<Int>) {
     }
 
     /**
-     * One card on the table. [seat] is the player's seat, [DEALER] or [BOARD]; [index] its place there. [value] is
-     * [Cards.HIDDEN] for the dealer's cards until [flipAt]. Times are ticks from the start of the deal.
+     * One card on the table. [seat] is the player's seat, [DEALER] or [BOARD]; [index] its place there. Only the board
+     * lies face up: a seat's cards are dealt face down, seen by their owner alone, and the dealer's and the callers'
+     * are turned at [flipAt] (see [seenBy]). Times are ticks from the start of the deal.
      */
-    data class ScriptCard(val seat: Int, val index: Int, val value: Int, val dealtAt: Int, val flipAt: Int = -1)
+    data class ScriptCard(val seat: Int, val index: Int, val value: Int, val dealtAt: Int, val flipAt: Int = -1) {
+        /** What a player sitting at [viewerSeat] (-1 for a bystander) may know of this card: its value or [Cards.HIDDEN]. */
+        fun seenBy(viewerSeat: Int): Int = if (seat == BOARD || (seat >= 0 && seat == viewerSeat) || flipAt >= 0) value else Cards.HIDDEN
+
+        /** Whether the card lies face up for everyone at [now]: a board card, or one already turned. */
+        fun openAt(now: Int): Boolean = seat == BOARD || flipAt in 0..now
+    }
 
     /** A gesture of the dealer from [at]. [seat] and [index] say which card it deals or turns, or which seat it pays. */
     data class ScriptGesture(val gesture: Gesture, val at: Int, val seat: Int = 0, val index: Int = 0)
@@ -225,6 +232,12 @@ class HoldemRound(private val shuffled: () -> List<Int>) {
             for (index in listOf(1, 0)) {
                 flip(index, at)
                 at += CARD_TICKS
+            }
+            // Those who called show their hand as the dealer turns his last card; folded hands stay face down.
+            val shownAt = at - CARD_TICKS
+            for (i in script.cards.indices) {
+                val card = script.cards[i]
+                if (card.seat >= 0 && seats[card.seat]?.choice == Choice.CALL) script.cards[i] = card.copy(flipAt = shownAt)
             }
             at += RESOLVE_DELAY - CARD_TICKS
             dealerScore = Hands.score(dealer + board)

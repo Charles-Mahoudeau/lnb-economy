@@ -25,9 +25,9 @@ import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket
 import net.minecraft.network.chat.Component
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.server.level.ServerPlayer
+import net.minecraft.world.level.ChunkPos
 import net.minecraft.sounds.SoundEvents
 import net.minecraft.sounds.SoundSource
-import net.minecraft.world.level.block.Block.UPDATE_CLIENTS
 import net.minecraft.world.level.block.entity.BlockEntity
 import net.minecraft.world.level.block.state.BlockState
 import net.neoforged.neoforge.network.PacketDistributor
@@ -82,7 +82,9 @@ class PokerTableBlockEntity(pos: BlockPos, state: BlockState) : BlockEntity(ModC
         }
         Casinos.refresh(level.server, link.handle)
         viewers.add(player.uuid)
-        PacketDistributor.sendToPlayer(player, state(level, open = true))
+        PacketDistributor.sendToPlayer(player, state(level, open = true, player.uuid))
+        // The chunk may have come with the table as a bystander sees it: this player's own cards, if any, face up.
+        player.connection.send(updatePacketFor(player))
     }
 
     fun close(player: ServerPlayer) {
@@ -223,21 +225,34 @@ class PokerTableBlockEntity(pos: BlockPos, state: BlockState) : BlockEntity(ModC
 
     // What players see
 
-    /** Sends the round's script to every client that sees the table when it changes: a deal, a showdown, a clear. */
+    /**
+     * Sends the round's script to every client that sees the table when it changes: a deal, a showdown, a clear. Each
+     * player gets their own copy, since only they may see their cards.
+     */
     private fun syncScript(level: ServerLevel) {
         val script = round.script
         val signature = "${round.phase}|${script.cards.size}|${script.gestures.size}|${script.watchSeat}|${script.watchTo}"
         if (signature == scriptSent) return
         scriptSent = signature
-        level.sendBlockUpdated(blockPos, blockState, blockState, UPDATE_CLIENTS)
+        for (player in level.chunkSource.chunkMap.getPlayers(ChunkPos(blockPos), false)) player.connection.send(updatePacketFor(player))
     }
 
-    override fun getUpdateTag(registries: HolderLookup.Provider): CompoundTag {
+    private fun updatePacketFor(player: ServerPlayer): Packet<ClientGamePacketListener> =
+        ClientboundBlockEntityDataPacket.create(this) { _, _ -> viewTag(round.seatOf(player.uuid)) }
+
+    /** As a bystander sees the table: what goes with the chunk, and to anyone the per-player sync missed. */
+    override fun getUpdateTag(registries: HolderLookup.Provider): CompoundTag = viewTag(-1)
+
+    /** The script as the player at [seat] (-1 for a bystander) may see it: other players' cards face down until turned. */
+    private fun viewTag(seat: Int): CompoundTag {
         val script = round.script
         val tag = CompoundTag()
         tag.putLong(VIEW_BASE, scriptBase)
-        // The dealer's cards go out face down until the showdown has them turned.
-        tag.putIntArray(VIEW_CARDS, script.cards.flatMap { listOf(it.seat, it.index, if (it.seat == HoldemRound.DEALER && it.flipAt < 0) Cards.HIDDEN else it.value, it.dealtAt, it.flipAt) })
+        // One's own cards come face up from the deal, so they aren't turned again at the showdown.
+        tag.putIntArray(VIEW_CARDS, script.cards.flatMap {
+            val own = it.seat >= 0 && it.seat == seat
+            listOf(it.seat, it.index, it.seenBy(seat), it.dealtAt, if (own) -1 else it.flipAt)
+        })
         tag.putIntArray(VIEW_GESTURES, script.gestures.flatMap { listOf(it.gesture.ordinal, it.at, it.seat, it.index) })
         tag.putIntArray(VIEW_TIMES, intArrayOf(script.clearAt, script.watchFrom, script.watchTo, script.watchSeat))
         return tag
@@ -259,7 +274,6 @@ class PokerTableBlockEntity(pos: BlockPos, state: BlockState) : BlockEntity(ModC
     private fun sync(level: ServerLevel) {
         sinceSync = 0
         if (viewers.isEmpty()) return
-        val payload = state(level, open = false)
         val gone = ArrayList<UUID>()
         for (uuid in viewers) {
             val player = level.server.playerList.getPlayer(uuid)
@@ -267,20 +281,23 @@ class PokerTableBlockEntity(pos: BlockPos, state: BlockState) : BlockEntity(ModC
             if (player == null || (round.seatOf(uuid) < 0 && (player.level() !== level || player.distanceToSqr(blockPos.center) > WATCH_RANGE * WATCH_RANGE))) {
                 gone.add(uuid)
             } else {
-                PacketDistributor.sendToPlayer(player, payload)
+                PacketDistributor.sendToPlayer(player, state(level, open = false, uuid))
             }
         }
         viewers.removeAll(gone.toSet())
     }
 
-    private fun state(level: ServerLevel, open: Boolean): PokerStatePayload {
+    /** The round as [viewer] may see it: their own cards, and the others' only once turned at the showdown. */
+    private fun state(level: ServerLevel, open: Boolean, viewer: UUID): PokerStatePayload {
         val link = link(level)
         val casino = roundCasino ?: link?.handle.orEmpty()
         val shown = round.phase == HoldemRound.Phase.SHOWDOWN && round.resultsOut
+        val viewerSeat = round.seatOf(viewer)
         val seats = (0 until HoldemRound.SEATS).map { index ->
             round.seat(index)?.let { seat ->
                 // A seat's cards show once the dealer has put them down.
-                val dealt = round.script.cards.filter { it.seat == index && it.dealtAt + CARD_LANDS <= round.now }.sortedBy { it.index }.map { it.value }
+                val dealt = round.script.cards.filter { it.seat == index && it.dealtAt + CARD_LANDS <= round.now }.sortedBy { it.index }
+                    .map { if (index == viewerSeat || it.openAt(round.now)) it.value else Cards.HIDDEN }
                 PokerSeatView(
                     seat.name, seat.ante, dealt, seat.choice.ordinal, if (shown) seat.result?.ordinal ?: -1 else -1, if (shown) seat.payout else 0,
                     if (shown && seat.choice == HoldemRound.Choice.CALL) Hands.category(seat.score) else -1,

@@ -25,8 +25,8 @@ import net.neoforged.neoforge.network.PacketDistributor
 /**
  * A poker table: the dealer's two cards and the board at the top, then the three seats side by side, each with its
  * player's face, cards, ante and what they chose. A free seat has a "Sit" button that antes what the box at the
- * bottom says; a seated player gets "Call" and "Fold" when the cards are out. Everyone at the table sees the same
- * thing, and so does anyone watching.
+ * bottom says; a seated player gets "Call" and "Fold" when the cards are out. As at a real table, each player sees
+ * only their own cards; the others' stay face down until those who called show them at the showdown.
  */
 class PokerScreen(val pos: BlockPos) : Screen(Component.translatable("gui.lnbeconomy.poker.title")) {
     private companion object {

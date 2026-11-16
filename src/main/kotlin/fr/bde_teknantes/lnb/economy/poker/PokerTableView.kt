@@ -91,8 +91,9 @@ class PokerTableView private constructor(
                     index = if (seat == HoldemRound.BOARD) 2 + cards[o + 1] else cards[o + 1]
                     spot = seat.coerceIn(0, HoldemRound.SEATS - 1)
                     value = sheetValue(cards[o + 2])
-                    // The dealer's two lie face down until he turns them; the board and the players' are face up.
-                    faceUp = seat != HoldemRound.DEALER
+                    // A card the server hid lies face down, and so does one it will turn later: only the board and
+                    // this player's own cards come face up.
+                    faceUp = cards[o + 2] != Cards.HIDDEN && cards[o + 4] < 0
                     dealtAt = base + cards[o + 3]
                     flipAt = at(cards[o + 4])
                     this.clearAt = at(clearAt)
