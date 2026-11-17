@@ -26,9 +26,14 @@ the mod on a player's computer only talks to the server. The contract is `docs/e
     operator in creative mode removes either by hitting it.
 - **Shared accounts.** "My accounts" (or `/account`) opens a shared account, renames it, sets its type (team, shop or
   casino) and invites players. The members screen shows faces and roles, and proposes the players who are on as the
-  owner types (Tab completes, Enter invites); any other username works too. An invited player gets a message with
-  [Accept] and [Decline], right away or when they next join, and sees the invitation at the top of "My accounts".
+  owner types (Tab completes, Enter invites); any other username works too. An invited player online gets a banner at
+  the top of the screen, from the game or the site alike, answered with J (accept) or K (decline), both rebindable;
+  a player who was away gets a message with [Accept] and [Decline] when they next join, and every invitation waits
+  at the top of "My accounts".
   Changing roles, removing members and closing an account stay on the site.
+- **Live changes from the site.** The server keeps the site's economy event stream open (with Warden's `api.url` and
+  `api.token`), so an account opened, an invitation sent, a role changed or a license given on the site shows in the
+  game within a second. The periodic refresh (`cache.refreshMinutes`) still runs, in case the stream is down.
 - **Casinos.** A casino is a shared account of type casino, which takes a **casino license**. The license dealer, a
   croupier who has seen better nights, sells one for the price set on the site: the money is burned, and he hands
   over a signed book as a keepsake. One license makes one account a casino, for good. A casino's counters sell chips

@@ -27,6 +27,8 @@ class LnbEconomyClient(modBus: IEventBus, container: ModContainer) {
             event.register(ModContent.TRADE_MENU.get(), ::TradeScreen)
         }
         modBus.addListener(ClientTrade::registerKeys)
+        modBus.addListener(InvitationBanner::registerKeys)
+        modBus.addListener(InvitationBanner::registerLayer)
         modBus.addListener<EntityRenderersEvent.RegisterRenderers> {
             it.registerEntityRenderer(ModContent.AUCTIONEER.get(), ::AuctioneerRenderer)
             it.registerEntityRenderer(ModContent.CASINO_DEALER.get(), ::CasinoDealerRenderer)
@@ -35,6 +37,7 @@ class LnbEconomyClient(modBus: IEventBus, container: ModContainer) {
             it.registerBlockEntityRenderer(ModContent.POKER_ENTITY.get(), ::PokerTableRenderer)
         }
         NeoForge.EVENT_BUS.addListener(ClientTrade::onClientTick)
+        NeoForge.EVENT_BUS.addListener(InvitationBanner::onClientTick)
         NeoForge.EVENT_BUS.addListener(ClientEconomy::onLoggingOut)
         NeoForge.EVENT_BUS.addListener(InventoryBalance::onInit)
         NeoForge.EVENT_BUS.addListener(InventoryBalance::onRenderPre)

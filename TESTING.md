@@ -224,8 +224,11 @@ A and B online. The site flag `economy.sharedAccounts` is on.
 | 9.3 | A: `/account create ab x` and a handle already taken | A red message for each (bad handle, "That # is already taken."), with a low note |
 | 9.4 | A: "..." on the account, change the name, Save | "… is now called …" in green; My accounts and B's screens show the new name |
 | 9.5 | A: Members, type the start of B's name | B is proposed with their face and "online"; Tab completes, Enter invites |
-| 9.6 | B, right away | A gold chat message "A invites you to …" with [Accept] [Decline], a sound, and the invitation at the top of My accounts |
-| 9.7 | B: Accept (chat or the + button) | "You joined …"; the account is in B's list as Member; A's Members screen lists B after reopening |
+| 9.6 | B, right away | A banner slides in at the top: "A invites you to … (#…)" with [J] Accept and [K] Decline, a sound, and the invitation at the top of My accounts; one banner only, even though the site's stream says it too |
+| 9.7 | B: press J (or the + button in My accounts) | "You joined …"; the banner slides away; the account is in B's list as Member; A's Members screen lists B after reopening |
+| 9.7b | B: wait 30 s without answering | The banner slides away; the invitation still waits in My accounts |
+| 9.7c | On the site, A invites B (Members tab, search B's name) while B plays | The same banner within a second or two |
+| 9.7d | On the site, A opens a new shared account | It shows in A's My accounts within a second or two, without rejoining |
 | 9.8 | A: invite a linked player who is away, then that player joins | They get the invitation message on joining |
 | 9.9 | A: invite, then the x beside the pending invitation | "Invitation taken back."; the invited player's My accounts no longer shows it |
 | 9.10 | B (member): "..." on the account | Name and type are locked ("Only the account's owners…"); Members opens, without the invitation box |

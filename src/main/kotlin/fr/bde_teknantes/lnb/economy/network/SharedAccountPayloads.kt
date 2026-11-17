@@ -154,3 +154,21 @@ data class AccountFeedbackPayload(val ok: Boolean, val key: String, val args: Li
         )
     }
 }
+
+/** Server to client: someone invited the player to a shared account. The client shows it as a banner. */
+data class InvitationNoticePayload(val invitationId: String, val accountName: String, val handle: String, val invitedBy: String) : CustomPacketPayload {
+    override fun type() = TYPE
+
+    companion object {
+        val TYPE = CustomPacketPayload.Type<InvitationNoticePayload>(LnbEconomy.id("invitation_notice"))
+        val STREAM_CODEC: StreamCodec<FriendlyByteBuf, InvitationNoticePayload> = StreamCodec.of(
+            { buf, p ->
+                buf.writeUtf(p.invitationId, 64)
+                buf.writeUtf(p.accountName, 128)
+                buf.writeUtf(p.handle, 64)
+                buf.writeUtf(p.invitedBy, 64)
+            },
+            { buf -> InvitationNoticePayload(buf.readUtf(64), buf.readUtf(128), buf.readUtf(64), buf.readUtf(64)) },
+        )
+    }
+}

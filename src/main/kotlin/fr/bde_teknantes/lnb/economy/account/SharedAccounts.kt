@@ -22,6 +22,7 @@ import fr.bde_teknantes.lnb.economy.network.AccountMembersRequestPayload
 import fr.bde_teknantes.lnb.economy.network.EconomyStatus
 import fr.bde_teknantes.lnb.economy.network.InvitationAnswerPayload
 import fr.bde_teknantes.lnb.economy.network.InvitationCancelPayload
+import fr.bde_teknantes.lnb.economy.network.InvitationNoticePayload
 import fr.bde_teknantes.lnb.economy.network.MemberEntry
 import fr.bde_teknantes.lnb.economy.network.PendingEntry
 import fr.bde_teknantes.lnb.warden.common.api.ApiResult
@@ -174,12 +175,12 @@ object SharedAccounts {
         named.thenAccept { result -> if (result != null) reply.handle(CompletableFuture.completedFuture(result)) { invitation ->
             reply.ok("economy.lnbeconomy.account.invited", invitation.username, invitation.account.name)
             if (reply.screen) members(reply, handle)
-            // Tell the invited player on every Minecraft account of theirs that is on.
+            // Tell the invited player on every Minecraft account of theirs that is on. The site's event stream says
+            // it too: notifyInvitation shows each invitation once.
             for (uuid in invitation.inviteeUuids.orEmpty().mapNotNull { runCatching { UUID.fromString(it) }.getOrNull() }) {
                 val invited = server.playerList.getPlayer(uuid) ?: continue
                 PlayerAccounts.refresh(server, uuid)
-                invited.sendSystemMessage(invitationMessage(invitation.id, invitation.account.name, invitation.account.handle, invitation.invitedBy?.ifBlank { null } ?: player.gameProfile.name))
-                invited.playNotifySound(SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.PLAYERS, 0.6f, 1.2f)
+                notifyInvitation(invited, invitation.id, invitation.account.name, invitation.account.handle, invitation.invitedBy?.ifBlank { null } ?: player.gameProfile.name)
             }
         } }
     }
@@ -224,6 +225,22 @@ object SharedAccounts {
                     it.withColor(ChatFormatting.RED).withClickEvent(ClickEvent(ClickEvent.Action.RUN_COMMAND, "/account decline $id"))
                 },
             )
+
+    /** Invitations already shown to each player, so the game's own notice and the site's event show one banner. */
+    private val notified = object : LinkedHashMap<String, Boolean>() {
+        override fun removeEldestEntry(eldest: MutableMap.MutableEntry<String, Boolean>?) = size > 512
+    }
+
+    /**
+     * Shows a new invitation to [player] as a banner at the top of their screen, answered with the invitation keys
+     * (J and K by default), and reads their invitations again so "My accounts" lists it.
+     */
+    fun notifyInvitation(player: ServerPlayer, id: String, name: String, handle: String, invitedBy: String) {
+        if (notified.put("${player.uuid}/$id", true) != null) return
+        PlayerAccounts.refresh(player.server, player.uuid, force = false)
+        PacketDistributor.sendToPlayer(player, InvitationNoticePayload(id, name, Handles.display(handle), invitedBy.ifBlank { "?" }))
+        player.playNotifySound(SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.PLAYERS, 0.6f, 1.2f)
+    }
 
     private fun showInvitations(player: ServerPlayer, emptyMessage: Boolean) {
         val invitations = PlayerAccounts.get(player.uuid)?.invitations.orEmpty()

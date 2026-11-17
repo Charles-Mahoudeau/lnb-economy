@@ -11,6 +11,7 @@ import fr.bde_teknantes.lnb.economy.network.AccountMembersPayload
 import fr.bde_teknantes.lnb.economy.network.AccountsSnapshotPayload
 import fr.bde_teknantes.lnb.economy.network.AuctionListingsPayload
 import fr.bde_teknantes.lnb.economy.network.AuctionMailboxPayload
+import fr.bde_teknantes.lnb.economy.network.InvitationNoticePayload
 import fr.bde_teknantes.lnb.economy.network.OpenAuctionPayload
 import fr.bde_teknantes.lnb.economy.network.MenuCasinoPayload
 import fr.bde_teknantes.lnb.economy.network.OpenCounterPayload
@@ -43,6 +44,8 @@ object ClientPayloadHandler {
     fun handlePokerState(payload: PokerStatePayload, context: IPayloadContext) {
         ClientPoker.update(payload)
     }
+
+    fun handleInvitationNotice(payload: InvitationNoticePayload, context: IPayloadContext) = InvitationBanner.handle(payload, context)
 
     fun handleOpenCounter(payload: OpenCounterPayload, context: IPayloadContext) {
         Minecraft.getInstance().setScreen(CounterScreen(payload))
