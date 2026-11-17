@@ -37,7 +37,7 @@ data class AccountView(
     }
 }
 
-/** What a shared account is for. Only `casino` changes anything in the game, and it needs a casino licence. */
+/** What a shared account is for. Only `casino` changes anything in the game, and it needs a casino license. */
 object AccountTypes {
     const val TEAM = "team"
     const val SHOP = "shop"
@@ -45,7 +45,7 @@ object AccountTypes {
     val ALL = listOf(TEAM, SHOP, CASINO)
 }
 
-/** A player's casino licences: [free] of the [total] aren't bound to a casino yet. */
+/** A player's casino licenses: [free] of the [total] aren't bound to a casino yet. */
 data class Licenses(val total: Int, val free: Int)
 
 /** `GET /players/:uuid`: the player's accounts, personal first, and the one that pays by default. */
@@ -102,10 +102,10 @@ data class InvitationList(val items: List<InvitationView>)
 /** A body that only names the acting player. */
 data class PlayerBody(val player: String)
 
-/** `POST /licenses`: [player] buys a casino licence, paid from [account] (the default account when null). */
+/** `POST /licenses`: [player] buys a casino license, paid from [account] (the default account when null). */
 data class LicenseBody(val idempotencyKey: String, val player: String, val account: String?)
 
-/** [transactionId] is null when licences are free. */
+/** [transactionId] is null when licenses are free. */
 data class LicenseResult(val transactionId: Long?, val replayed: Boolean, val amount: Long, val from: TransferSide?, val licenses: Licenses)
 
 /** `PUT /players/:uuid/default-account`. */

@@ -110,7 +110,7 @@ object EconomyCommands {
                             spawnNpc(context, ModContent.AUCTIONEER.get(), StringArgumentType.getString(context, "name"))
                         }),
                 ).then(
-                    Commands.literal("licence")
+                    Commands.literal("license")
                         .executes { context -> spawnNpc(context, ModContent.CASINO_DEALER.get(), null) }
                         .then(Commands.argument("name", StringArgumentType.greedyString()).executes { context ->
                             spawnNpc(context, ModContent.CASINO_DEALER.get(), StringArgumentType.getString(context, "name"))

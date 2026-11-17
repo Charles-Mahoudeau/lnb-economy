@@ -10,7 +10,7 @@ import net.minecraft.network.chat.Component
 import net.neoforged.neoforge.network.PacketDistributor
 
 /**
- * The licence dealer's offer: what a casino licence is, its price, how many the player holds, the account that pays,
+ * The license dealer's offer: what a casino license is, its price, how many the player holds, the account that pays,
  * and a "Buy" that asks to be clicked twice: the money is destroyed, not paid to anyone.
  */
 class LicenseScreen(dealer: String) : Screen(Component.literal(dealer)) {

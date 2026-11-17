@@ -5,7 +5,7 @@ import net.minecraft.network.FriendlyByteBuf
 import net.minecraft.network.codec.StreamCodec
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload
 
-/** Server -> client: the player talked to the licence dealer called [dealer]. The price and licences come with the accounts. */
+/** Server -> client: the player talked to the license dealer called [dealer]. The price and licenses come with the accounts. */
 data class OpenLicensePayload(val dealer: String) : CustomPacketPayload {
     override fun type() = TYPE
 
@@ -18,7 +18,7 @@ data class OpenLicensePayload(val dealer: String) : CustomPacketPayload {
     }
 }
 
-/** Client -> server: buy one casino licence, paid from [accountId] (null: the default account). */
+/** Client -> server: buy one casino license, paid from [accountId] (null: the default account). */
 data class LicenseBuyPayload(val accountId: String?) : CustomPacketPayload {
     override fun type() = TYPE
 

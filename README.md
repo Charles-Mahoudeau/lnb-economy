@@ -22,16 +22,16 @@ the mod on a player's computer only talks to the server. The contract is `docs/e
   - `/economy notify on|off`: messages when someone buys from or sells to your shops, and when one of your auction
     house listings sells.
   - `/economy status|pending|retry <key>|casino <#account> [outstanding <value>]`: operators.
-  - `/economy npc hdv|licence [name]`: operators place the auctioneer or the licence dealer where they stand. An
+  - `/economy npc hdv|license [name]`: operators place the auctioneer or the license dealer where they stand. An
     operator in creative mode removes either by hitting it.
 - **Shared accounts.** "My accounts" (or `/account`) opens a shared account, renames it, sets its type (team, shop or
   casino) and invites players. The members screen shows faces and roles, and proposes the players who are on as the
   owner types (Tab completes, Enter invites); any other username works too. An invited player gets a message with
   [Accept] and [Decline], right away or when they next join, and sees the invitation at the top of "My accounts".
   Changing roles, removing members and closing an account stay on the site.
-- **Casinos.** A casino is a shared account of type casino, which takes a **casino licence**. The licence dealer, a
+- **Casinos.** A casino is a shared account of type casino, which takes a **casino license**. The license dealer, a
   croupier who has seen better nights, sells one for the price set on the site: the money is burned, and he hands
-  over a signed book as a keepsake. One licence makes one account a casino, for good. A casino's counters sell chips
+  over a signed book as a keepsake. One license makes one account a casino, for good. A casino's counters sell chips
   (the player pays the casino's account) and cash them (the account pays the player). Chips carry their casino and
   only its machines and counters take them. While playing, nothing reaches the site: the mod counts each casino's
   chips in circulation, which its account must back, and a machine only starts a game the casino's **free balance**
@@ -83,7 +83,7 @@ Java 21. Then put these jars in the instance's `mods/` folder. The same mods go 
 | LNB Economy      | this mod, from the [releases][r] | required, on the server and on the players' computers                      |
 | LNB Warden       | 0.1.0 or newer                   | required, on the server and on the players' computers                      |
 | Kotlin for Forge | 5.12 or newer                    | required                                                                   |
-| GeckoLib         | 4.9 or newer (tested on 4.9.3)   | required: the counter's teller and the licence dealer are animated with it |
+| GeckoLib         | 4.9 or newer (tested on 4.9.3)   | required: the counter's teller and the license dealer are animated with it |
 | MineVegas Casino | 1.1.1 up to, not including, 1.2  | optional: its machines then take only the chips of their casino            |
 
 [r]: https://github.com/Dimitri-Collineau/lnb-economy/releases
@@ -94,10 +94,10 @@ player has no economy.
 ### The site
 
 The mod needs a version of LNB's site with the economy's server routes (`docs/economy.md` in `lnb-website`). Since
-0.2.0, that includes shared accounts from the game, account types, casino licences, mob drops and sale notices: an
+0.2.0, that includes shared accounts from the game, account types, casino licenses, mob drops and sale notices: an
 older site refuses those (the rest keeps working). Each part also has a flag on the site (`/admin/flags`):
 `economy.serverApi` and `economy.transfers` for everything, then `economy.sharedAccounts`, `economy.casinoLicenses`,
-`economy.mobDrops`, `economy.shops`, `economy.trades` and `economy.auctions`. The licence price is in the site's
+`economy.mobDrops`, `economy.shops`, `economy.trades` and `economy.auctions`. The license price is in the site's
 economy settings.
 
 ## Configuration
@@ -146,7 +146,7 @@ Casino, Kotlin for Forge and GeckoLib are installed separately. A tag fails the 
 
 The poker table's models and textures, its croupier (model, animations and clothes) with the card motion, and the
 playing cards come from
-[MineVegas Casino](https://www.curseforge.com/minecraft/mc-mods/minevegas-casino) by byMehd, under its licence (MIT
+[MineVegas Casino](https://www.curseforge.com/minecraft/mc-mods/minevegas-casino) by byMehd, under its license (MIT
 with an attribution condition), copied in `LICENSES/MineVegas-Casino.txt`. They are under
 `assets/lnbeconomy/models/block/poker_table_*.json`, `textures/block/poker/`, `textures/item/poker_table.png` and
 `textures/gui/cards.png`, `textures/entity/poker_cards.png` and `textures/entity/poker_dealer/`, and the code in

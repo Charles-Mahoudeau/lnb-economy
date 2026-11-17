@@ -29,7 +29,7 @@ import net.neoforged.neoforge.network.handling.IPayloadContext
 import java.util.UUID
 
 /**
- * Casino licences, sold by the dealer. A licence lets its holder make one shared account a casino; the site keeps
+ * Casino licenses, sold by the dealer. A license lets its holder make one shared account a casino; the site keeps
  * count, burns the price and has the final say. The book handed over is a keepsake: it opens no door by itself.
  */
 object Licenses {
@@ -103,7 +103,7 @@ object Licenses {
         }
     }
 
-    /** The keepsake: a signed book from the dealer, naming the holder and which of their licences it is. */
+    /** The keepsake: a signed book from the dealer, naming the holder and which of their licenses it is. */
     private fun book(dealer: String, holder: String, number: Int): ItemStack {
         val pages = listOf(
             Component.translatable("item.lnbeconomy.license.page1", holder, number),
@@ -111,7 +111,7 @@ object Licenses {
         ).map { Filterable.passThrough<Component>(it) }
         val author = dealer.ifBlank { "LNB" }.take(16)
         return ItemStack(Items.WRITTEN_BOOK).apply {
-            set(DataComponents.WRITTEN_BOOK_CONTENT, WrittenBookContent(Filterable.passThrough("Casino Licence"), author, 0, pages, true))
+            set(DataComponents.WRITTEN_BOOK_CONTENT, WrittenBookContent(Filterable.passThrough("Casino License"), author, 0, pages, true))
             set(DataComponents.ITEM_NAME, Component.translatable("item.lnbeconomy.license"))
         }
     }

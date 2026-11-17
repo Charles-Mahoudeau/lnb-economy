@@ -219,7 +219,7 @@ A and B online. The site flag `economy.sharedAccounts` is on.
 
 | # | Do | Expect |
 |---|----|--------|
-| 9.1 | A: My accounts, "+ New", type a name | The handle follows the name (`Casino Royal !` gives `casino-royal`) until A edits it; Team is chosen; Casino is locked with "Needs a casino licence" |
+| 9.1 | A: My accounts, "+ New", type a name | The handle follows the name (`Casino Royal !` gives `casino-royal`) until A edits it; Team is chosen; Casino is locked with "Needs a casino license" |
 | 9.2 | A: Open the account | "Shared account … opened. You own it."; back on My accounts, the new account is there; the site's bank page shows it |
 | 9.3 | A: `/account create ab x` and a handle already taken | A red message for each (bad handle, "That # is already taken."), with a low note |
 | 9.4 | A: "..." on the account, change the name, Save | "… is now called …" in green; My accounts and B's screens show the new name |
@@ -232,22 +232,22 @@ A and B online. The site flag `economy.sharedAccounts` is on.
 | 9.11 | `/compte invitations`, `/account members <handle>`, `/account rename`, `/account type` | The same answers in the chat |
 | 9.12 | Turn `economy.sharedAccounts` off on the site, create an account | "The economy is switched off for now." |
 
-## 10. Casino licences
+## 10. Casino licenses
 
-An operator, and A with 100,000 LNBits or more (give them with an adjustment in the site admin). The licence price is in
+An operator, and A with 100,000 LNBits or more (give them with an adjustment in the site admin). The license price is in
 the site admin's economy settings.
 
 | # | Do | Expect |
 |---|----|--------|
-| 10.1 | Operator: `/economy npc licence Marcel` | A dishevelled dealer named Marcel (visor askew, undone bow tie, a bottle held by its neck in his right fist), swaying, head hanging; every ten seconds he drinks from the bottle; he doesn't turn toward players; can't be hurt or pushed; hit in creative: gone |
+| 10.1 | Operator: `/economy npc license Marcel` | A dishevelled dealer named Marcel (visor askew, undone bow tie, a bottle held by its neck in his right fist), swaying, head hanging; every ten seconds he drinks from the bottle; he doesn't turn toward players; can't be hurt or pushed; hit in creative: gone |
 | 10.2 | A: right click him | He starts awake and waves; his offer, the price, "Yours: 0 free of 0", the account that pays |
 | 10.3 | A, with too little on the chosen account | "That account doesn't hold enough.", Buy greyed |
-| 10.4 | A: Buy, then Confirm | "Casino licence bought for …", a level-up sound, a signed book "Casino Licence" naming A; A −price; the site shows a burn with the reason casino licence; "Yours: 1 free of 1" |
-| 10.5 | A: My accounts, "+ New", Casino, Open | The account opens as a casino; free licences back to 0; Casino is locked again for a second account |
+| 10.4 | A: Buy, then Confirm | "Casino license bought for …", a level-up sound, a signed book "Casino License" naming A; A −price; the site shows a burn with the reason casino license; "Yours: 1 free of 1" |
+| 10.5 | A: My accounts, "+ New", Casino, Open | The account opens as a casino; free licenses back to 0; Casino is locked again for a second account |
 | 10.6 | A: "..." on the casino | Team and Shop are locked: "A casino stays a casino." |
-| 10.7 | A: link wand on a counter | Only casinos are proposed; with none, the message says to buy a licence |
-| 10.8 | In the database, set `#test-casino`'s type to `team`, wait for the refresh (or `/economy casino #test-casino`), play a linked machine | Refused in red: "… isn't a casino: its account has no casino licence." |
-| 10.9 | Stop the site, buy a licence, start it again | "…isn't answering yet"; then bought once, one book |
+| 10.7 | A: link wand on a counter | Only casinos are proposed; with none, the message says to buy a license |
+| 10.8 | In the database, set `#test-casino`'s type to `team`, wait for the refresh (or `/economy casino #test-casino`), play a linked machine | Refused in red: "… isn't a casino: its account has no casino license." |
+| 10.9 | Stop the site, buy a license, start it again | "…isn't answering yet"; then bought once, one book |
 
 ## 11. Mob drops
 

@@ -84,7 +84,7 @@ data class InvitationEntry(val id: String, val handle: String, val name: String,
 
 /**
  * Server -> client: the player's accounts (personal first), the one that pays by default, the invitations waiting for
- * them, and their casino licences ([licensesFree] of [licensesTotal] not used yet, at [licensePrice] each; -1 when
+ * them, and their casino licenses ([licensesFree] of [licensesTotal] not used yet, at [licensePrice] each; -1 when
  * the site doesn't sell any).
  */
 data class AccountsSnapshotPayload(

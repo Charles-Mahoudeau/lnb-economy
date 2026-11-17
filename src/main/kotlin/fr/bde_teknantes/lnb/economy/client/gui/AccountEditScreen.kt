@@ -21,7 +21,7 @@ import net.neoforged.neoforge.network.PacketDistributor
 
 /**
  * Opens a shared account ([existing] null) or manages one: its name, and its type among team, shop and casino. A
- * casino needs a free casino licence and stays a casino. Only owners change anything; everyone gets to the members.
+ * casino needs a free casino license and stays a casino. Only owners change anything; everyone gets to the members.
  * The handle is proposed from the name and never changes once the account is open.
  */
 class AccountEditScreen(private val parent: Screen?, private val existing: AccountEntry?) : Screen(
@@ -168,8 +168,8 @@ class AccountEditScreen(private val parent: Screen?, private val existing: Accou
             }
         }
         graphics.drawString(font, Component.translatable("gui.lnbeconomy.account.type"), x, panelY + TYPE_Y - 11, CasinoUi.GOLD_TEXT, true)
-        val licences = Component.translatable("gui.lnbeconomy.account.licences", ClientEconomy.snapshot.licensesFree)
-        graphics.drawString(font, licences, x + INNER - font.width(licences), panelY + TYPE_Y - 11, CasinoUi.DIM, true)
+        val licenses = Component.translatable("gui.lnbeconomy.account.licenses", ClientEconomy.snapshot.licensesFree)
+        graphics.drawString(font, licenses, x + INNER - font.width(licenses), panelY + TYPE_Y - 11, CasinoUi.DIM, true)
 
         val feedback = ClientAccounts.feedback
         val line = when {
@@ -188,14 +188,14 @@ class AccountEditScreen(private val parent: Screen?, private val existing: Accou
 
     override fun isPauseScreen(): Boolean = false
 
-    /** One account type. Casino is locked without a free licence; a casino's other types are locked for good. */
+    /** One account type. Casino is locked without a free license; a casino's other types are locked for good. */
     private inner class TypeChoice(private val choice: String, x: Int, y: Int, width: Int) :
         AbstractButton(x, y, width, 20, Component.translatable("gui.lnbeconomy.accounts.type.$choice")) {
 
         private fun locked(): Component? = when {
             !mayEdit -> Component.translatable("gui.lnbeconomy.account.owners_only")
             wasCasino && choice != AccountTypes.CASINO -> Component.translatable("gui.lnbeconomy.account.type.locked")
-            choice == AccountTypes.CASINO && !wasCasino && ClientEconomy.snapshot.licensesFree < 1 -> Component.translatable("gui.lnbeconomy.account.type.no_licence")
+            choice == AccountTypes.CASINO && !wasCasino && ClientEconomy.snapshot.licensesFree < 1 -> Component.translatable("gui.lnbeconomy.account.type.no_license")
             else -> null
         }
 

@@ -8,7 +8,7 @@ import software.bernie.geckolib.model.GeoModel
 import software.bernie.geckolib.renderer.GeoEntityRenderer
 
 /**
- * The licence dealer: our own model, texture and animations (see `visual-previews/scripts/dealer_geo.py`), drawn a
+ * The license dealer: our own model, texture and animations (see `visual-previews/scripts/dealer_geo.py`), drawn a
  * little under a player's size like a villager. His head hangs and never follows players: only his animations move it.
  */
 class CasinoDealerRenderer(context: EntityRendererProvider.Context) : GeoEntityRenderer<CasinoDealer>(context, Model()) {

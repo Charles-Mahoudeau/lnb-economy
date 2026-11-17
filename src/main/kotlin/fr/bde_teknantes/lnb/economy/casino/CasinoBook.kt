@@ -15,7 +15,7 @@ class CasinoBook(private val clock: () -> Long) {
         data object Frozen : Status
         data object Missing : Status
 
-        /** The account exists but isn't of type casino: it has no casino licence. */
+        /** The account exists but isn't of type casino: it has no casino license. */
         data object NotCasino : Status
 
         /** Never read from the site, or read too long ago while the site is down. */

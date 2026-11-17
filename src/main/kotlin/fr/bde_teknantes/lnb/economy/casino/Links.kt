@@ -25,7 +25,7 @@ import net.neoforged.neoforge.network.handling.IPayloadContext
 
 /**
  * Linking machines and counters to a casino with the link wand. A casino is a shared account of type casino, which
- * takes a casino licence. Only an owner or member of a casino's account may link
+ * takes a casino license. Only an owner or member of a casino's account may link
  * something to it, checked with the site at that moment; an existing link is changed by an owner or member of its
  * casino, or an operator.
  */

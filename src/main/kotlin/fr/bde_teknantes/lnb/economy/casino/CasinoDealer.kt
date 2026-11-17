@@ -19,8 +19,8 @@ import software.bernie.geckolib.animation.RawAnimation
 import software.bernie.geckolib.util.GeckoLibUtil
 
 /**
- * The dealer who sells casino licences: a croupier who has seen better nights, placed at spawn by an operator with
- * `/economy npc licence [name]`. Like the auctioneer, it never moves, never looks around, never despawns, can't be
+ * The dealer who sells casino licenses: a croupier who has seen better nights, placed at spawn by an operator with
+ * `/economy npc license [name]`. Like the auctioneer, it never moves, never looks around, never despawns, can't be
  * pushed or hurt, and only an operator in creative mode removes it, by hitting it.
  */
 class CasinoDealer(type: EntityType<out CasinoDealer>, level: Level) : PathfinderMob(type, level), GeoEntity {
