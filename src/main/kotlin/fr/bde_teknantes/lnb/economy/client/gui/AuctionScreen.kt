@@ -415,9 +415,23 @@ class AuctionScreen : Screen(Component.translatable("gui.lnbeconomy.auction.titl
         font.split(text, width).forEachIndexed { i, line -> graphics.drawString(font, line, x, y + i * 10, color, true) }
     }
 
+    /**
+     * The item's own vanilla tooltip (name, enchantments, attributes...), then the listing's lines. Durability is
+     * always shown, not only with advanced tooltips (F3+H): it is what a buyer of a tool needs to know.
+     */
     private fun tooltip(entry: AuctionEntry): List<Component> {
         val lines = mutableListOf<Component>()
-        lines += if (entry.stack.isEmpty) Component.literal(entry.name).withStyle(ChatFormatting.RED) else entry.stack.hoverName
+        val stack = entry.stack
+        if (stack.isEmpty) {
+            lines += Component.literal(entry.name).withStyle(ChatFormatting.RED)
+        } else {
+            val mc = minecraft ?: return lines
+            lines += getTooltipFromItem(mc, stack)
+            if (stack.isDamaged && !mc.options.advancedItemTooltips) {
+                lines += Component.translatable("item.durability", stack.maxDamage - stack.damageValue, stack.maxDamage)
+            }
+            lines += Component.empty()
+        }
         when (tab) {
             AuctionRequestPayload.MAILBOX -> lines += Component.translatable("gui.lnbeconomy.auction.reason.${entry.detail}").withStyle(ChatFormatting.GRAY)
             else -> {
