@@ -28,6 +28,8 @@ object MarketUi {
 
     fun language(): String = Minecraft.getInstance().options.languageCode
 
+    private const val SELECTED = 0xFF343C94.toInt()
+
     /** A button in the B2 look. */
     class Button(
         x: Int, y: Int, width: Int, height: Int,
@@ -45,12 +47,22 @@ object MarketUi {
             val hover = isHoveredOrFocused && active
             when (kindNow) {
                 Kind.ACTION -> PixelBox.raised(graphics, x, y, width, height, if (!active) PixelBox.BORDER else if (hover) PixelBox.ACTION_HOVER else PixelBox.ACTION)
-                Kind.TAB_ON, Kind.CHIP_ON -> PixelBox.outlined(graphics, x, y, width, height, PixelBox.RAISED, PixelBox.DUSK)
-                Kind.TAB, Kind.CHIP -> PixelBox.raised(graphics, x, y, width, height, if (hover) PixelBox.BORDER else PixelBox.RAISED)
+                // The open tab is bright and lit; the other is flat and dim, so which one you are on is plain.
+                Kind.TAB_ON -> {
+                    PixelBox.outlined(graphics, x, y, width, height, SELECTED, PixelBox.DUSK)
+                    graphics.fill(x + 2, y + height - 3, x + width - 2, y + height - 1, PixelBox.DUSK)
+                }
+                Kind.CHIP_ON -> PixelBox.outlined(graphics, x, y, width, height, SELECTED, PixelBox.DUSK)
+                Kind.TAB -> PixelBox.flat(graphics, x, y, width, height, if (hover) PixelBox.RAISED else PixelBox.SURFACE)
+                Kind.CHIP -> PixelBox.raised(graphics, x, y, width, height, if (hover) PixelBox.BORDER else PixelBox.RAISED)
                 Kind.NORMAL -> PixelBox.raised(graphics, x, y, width, height, if (hover) PixelBox.BORDER else PixelBox.RAISED)
             }
             val font = Minecraft.getInstance().font
-            val color = if (!active) PixelBox.MUTED else PixelBox.TEXT
+            val color = when {
+                !active || kindNow == Kind.TAB -> PixelBox.MUTED
+                kindNow == Kind.TAB_ON || kindNow == Kind.CHIP_ON -> 0xFFFFFFFF.toInt()
+                else -> PixelBox.TEXT
+            }
             val text = CasinoUi.fit(font, message.string, width - 6)
             graphics.drawString(font, text, x + (width - font.width(text)) / 2, y + (height - 8) / 2, color, false)
         }

@@ -143,6 +143,9 @@ object EconomyApi {
         }
         // Plain HTTP is allowed: the server's admin chose api.url, and LNB Warden warns about it at startup.
         return ApiClient.send<T>(url, method, path, token, body, requireSecure = false, headers = EconomyHttp.HEADERS)
-            .thenApply { result -> result.also { ApiHealth.record(what, it) } }
+            .thenApply { result ->
+                // A feature LNB turned off (the Market, say) answers 503 `disabled`: the API itself is fine.
+                result.also { if (!it.isDisabled) ApiHealth.record(what, it) }
+            }
     }
 }

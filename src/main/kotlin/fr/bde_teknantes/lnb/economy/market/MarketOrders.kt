@@ -10,6 +10,7 @@ import fr.bde_teknantes.lnb.economy.ledger.JournalEntry
 import fr.bde_teknantes.lnb.economy.ledger.Outcome
 import fr.bde_teknantes.lnb.economy.ledger.RetryPolicy
 import fr.bde_teknantes.lnb.economy.ledger.TransferJournal
+import fr.bde_teknantes.lnb.economy.money.Amounts
 import fr.bde_teknantes.lnb.economy.money.Texts
 import fr.bde_teknantes.lnb.warden.common.api.ApiResult
 import net.minecraft.ChatFormatting
@@ -151,6 +152,7 @@ object MarketOrders {
                 player?.let {
                     say(
                         it, Component.translatable("economy.lnbeconomy.market.sold", result.quantity, name(entry), Texts.amount(result.total, it)).withStyle(ChatFormatting.GREEN),
+                        Component.translatable("economy.lnbeconomy.market.toast.sold", result.quantity, name(entry), Amounts.format(result.total, Texts.language(it))).withStyle(ChatFormatting.GREEN),
                     )
                     if (result.capped) say(it, Component.translatable("economy.lnbeconomy.market.capped").withStyle(ChatFormatting.GOLD))
                     it.playNotifySound(SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.PLAYERS, 0.6f, 1f)
@@ -171,6 +173,7 @@ object MarketOrders {
                 player?.let {
                     say(
                         it, Component.translatable("economy.lnbeconomy.market.bought", result.quantity, name(entry), Texts.amount(result.total, it)).withStyle(ChatFormatting.GREEN),
+                        Component.translatable("economy.lnbeconomy.market.toast.bought", result.quantity, name(entry), Amounts.format(result.total, Texts.language(it))).withStyle(ChatFormatting.GREEN),
                     )
                     it.playNotifySound(SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.PLAYERS, 0.6f, 1f)
                 }
@@ -240,9 +243,9 @@ object MarketOrders {
     private fun JournalEntry.transferDirection(): String? = body.get("direction")?.asString
 
     /** Chat and the screen's toast: red is a failure, anything else is good news or a note. */
-    private fun say(player: ServerPlayer, message: Component) {
+    private fun say(player: ServerPlayer, message: Component, toast: Component = message) {
         player.sendSystemMessage(message)
-        MarketViews.toast(player, message.style.color?.value != ChatFormatting.RED.color, message)
+        MarketViews.toast(player, message.style.color?.value != ChatFormatting.RED.color, toast)
     }
 
     private fun cant(player: ServerPlayer, why: Cant) {

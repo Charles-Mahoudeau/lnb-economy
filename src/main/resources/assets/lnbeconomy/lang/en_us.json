@@ -492,5 +492,10 @@
   "gui.lnbeconomy.market.confirm": "Click again to confirm",
   "gui.lnbeconomy.market.only_hold": "You only hold %s plain ones.",
   "gui.lnbeconomy.market.limit": "An order is at most %s items.",
-  "gui.lnbeconomy.market.crosses": "This sale takes tier %s from %s %% to %s %%."
+  "gui.lnbeconomy.market.crosses": "This sale takes tier %s from %s %% to %s %%.",
+  "gui.lnbeconomy.market.now": "Now",
+  "gui.lnbeconomy.market.ago_hours": "%s h ago",
+  "gui.lnbeconomy.market.ago_days": "%s d ago",
+  "economy.lnbeconomy.market.toast.sold": "Sold %s × %s: +%s",
+  "economy.lnbeconomy.market.toast.bought": "Bought %s × %s: -%s"
 }

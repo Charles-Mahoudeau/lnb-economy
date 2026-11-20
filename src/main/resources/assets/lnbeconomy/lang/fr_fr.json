@@ -492,5 +492,10 @@
   "gui.lnbeconomy.market.confirm": "Clique encore pour confirmer",
   "gui.lnbeconomy.market.only_hold": "Tu n’en as que %s simples.",
   "gui.lnbeconomy.market.limit": "Une commande va jusqu’à %s objets.",
-  "gui.lnbeconomy.market.crosses": "Cette vente fait passer le palier %s de %s %% à %s %%."
+  "gui.lnbeconomy.market.crosses": "Cette vente fait passer le palier %s de %s %% à %s %%.",
+  "gui.lnbeconomy.market.now": "Maintenant",
+  "gui.lnbeconomy.market.ago_hours": "il y a %s h",
+  "gui.lnbeconomy.market.ago_days": "il y a %s j",
+  "economy.lnbeconomy.market.toast.sold": "Vendu %s × %s : +%s",
+  "economy.lnbeconomy.market.toast.bought": "Acheté %s × %s : -%s"
 }

@@ -32,7 +32,8 @@ class MarketEfficiencyScreen(private val parent: Screen) : Screen(Component.tran
         addRenderableWidget(MarketUi.Button(x + 8, y + height - 24, 70, 16, CommonComponents.GUI_BACK, MarketUi.Button.Kind.NORMAL) { onClose() })
     }
 
-    override fun render(graphics: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {
+    /** Drawn here, not in render: the game blurs what a screen drew before its background step. */
+    override fun renderBackground(graphics: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {
         renderTransparentBackground(graphics)
         val tiers = ClientMarket.catalog?.tiers.orEmpty()
         val height = 40 + tiers.size * (TILE_H + TILE_GAP) + 30
@@ -73,7 +74,6 @@ class MarketEfficiencyScreen(private val parent: Screen) : Screen(Component.tran
         if (ClientMarket.capped) {
             graphics.drawString(font, Component.translatable("economy.lnbeconomy.market.capped"), x + 90, y + height - 20, PixelBox.GOLD, false)
         }
-        super.render(graphics, mouseX, mouseY, partialTick)
     }
 
     override fun onClose() {

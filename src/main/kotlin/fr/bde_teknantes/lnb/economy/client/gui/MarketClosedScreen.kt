@@ -22,14 +22,14 @@ class MarketClosedScreen : Screen(Component.translatable("gui.lnbeconomy.market.
         addRenderableWidget(MarketUi.Button(x + (W - 80) / 2, y + H - 26, 80, 18, CommonComponents.GUI_DONE, MarketUi.Button.Kind.NORMAL) { onClose() })
     }
 
-    override fun render(graphics: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {
+    /** Drawn here, not in render: the game blurs what a screen drew before its background step. */
+    override fun renderBackground(graphics: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {
         renderTransparentBackground(graphics)
         val x = (width - W) / 2
         val y = (height - H) / 2
         PixelBox.raised(graphics, x, y, W, H, PixelBox.SURFACE)
         graphics.drawString(font, title, x + 10, y + 10, PixelBox.TEXT, false)
         CasinoUi.wrapped(graphics, font, Component.translatable("gui.lnbeconomy.market.closed"), x + 10, y + 28, W - 20, 3, PixelBox.MUTED)
-        super.render(graphics, mouseX, mouseY, partialTick)
     }
 
     override fun removed() = MarketUi.left()
