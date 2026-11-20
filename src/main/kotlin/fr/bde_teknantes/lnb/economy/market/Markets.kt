@@ -71,11 +71,13 @@ object Markets {
                     result is ApiResult.Ok -> {
                         val wasOpen = state.isOpen
                         state.apply(result.body)
+                        MarketViews.onState(server)
                         if (!wasOpen) LnbEconomy.LOGGER.info("The Market is open: {} items", result.body.items.size)
                     }
                     result.isDisabled -> {
                         if (!state.closed) LnbEconomy.LOGGER.info("The Market is off on the site")
                         state.markClosed()
+                        MarketViews.onState(server)
                     }
                     else -> LnbEconomy.LOGGER.debug("Couldn't read the Market's state: {}", result.describe())
                 }
@@ -91,7 +93,9 @@ object Markets {
                 val updates = body.getAsJsonArray("items")?.mapNotNull {
                     runCatching { ApiClient.GSON.fromJson(it, MarketEventItem::class.java) }.getOrNull()
                 }.orEmpty()
-                server.execute { if (state.onStocks(revision, updates)) refresh(server) }
+                server.execute {
+                    if (state.onStocks(revision, updates)) refresh(server) else MarketViews.onStocks(server, updates.map { it.id })
+                }
             }
             "market-config" -> server.execute { if (state.needsRefresh(revision)) refresh(server) }
         }

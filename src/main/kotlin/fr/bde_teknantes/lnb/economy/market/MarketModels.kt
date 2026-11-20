@@ -12,6 +12,8 @@ data class MarketSettings(
     val maxOrderItems: Int,
     val sell: Boolean,
     val buy: Boolean,
+    /** The site lets a sale pay a chosen account. Absent on older sites, so false. */
+    val saleAccount: Boolean = false,
 )
 
 /** `q1` and `q2` in cents of nominal value, rates in percent. */
@@ -123,3 +125,8 @@ data class MarketRecipeResult(val stored: Int, val changed: Boolean, val problem
 
 /** `market` event: the stock right after orders, not drifted. */
 data class MarketEventItem(val id: String, val stock: Double, val at: String)
+
+/** `GET /api/market/items/:id/history`: public, one point per snapshot or bucket. */
+data class MarketHistoryPoint(val at: String, val price: Double)
+
+data class MarketHistoryView(val period: String, val points: List<MarketHistoryPoint> = emptyList())

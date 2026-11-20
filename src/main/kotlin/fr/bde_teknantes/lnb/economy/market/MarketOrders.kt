@@ -81,8 +81,8 @@ object MarketOrders {
         return plainSlots(player, item).sumOf { player.inventory.items[it].count }
     }
 
-    /** Sells [quantity] of [itemId] from the inventory for what the player saw ([expectedTotal], cents). */
-    fun sell(player: ServerPlayer, itemId: String, quantity: Int, expectedTotal: Long) {
+    /** Sells [quantity] of [itemId] from the inventory for what the player saw ([expectedTotal], cents), onto [accountId] if the site allows it. */
+    fun sell(player: ServerPlayer, itemId: String, quantity: Int, expectedTotal: Long, accountId: String? = null) {
         problem(player, itemId, quantity, selling = true)?.let { return cant(player, it) }
         val item = itemOf(itemId) ?: return
         val server = player.server
@@ -91,6 +91,9 @@ object MarketOrders {
             return cant(player, Cant("economy.lnbeconomy.market.cant.not_enough", quantity, ItemStack(item).hoverName))
         }
         // Checked again at the moment of taking: nothing else runs on the server thread in between.
+        if (accountId != null && PlayerAccounts.accounts(player.uuid)?.accounts?.any { it.id == accountId } != true) {
+            return cant(player, Cant("economy.lnbeconomy.problem.notAllowed"))
+        }
         val taken = ArrayList<ItemStack>()
         var left = quantity
         for (slot in slots) {
@@ -109,7 +112,7 @@ object MarketOrders {
             Data.QUANTITY to quantity.toString(),
         )
         TransferJournal.submit(RetryPolicy.MARKET_ORDERS, SELL, data) { key ->
-            MarketOrderBody(key, player.uuid.toString(), itemId, MarketOrderBody.SELL, quantity, expectedTotal)
+            MarketOrderBody(key, player.uuid.toString(), itemId, MarketOrderBody.SELL, quantity, expectedTotal, accountId)
         }
     }
 
@@ -143,13 +146,13 @@ object MarketOrders {
             }
             is Outcome.Done -> {
                 val result = outcome.decode<MarketOrderResult>()
-                settle(server, result)
+                settle(server, uuid, result)
                 if (result.replayed) LnbEconomy.LOGGER.info("Market sale {} had already been made", entry.key)
                 player?.let {
-                    it.sendSystemMessage(
-                        Component.translatable("economy.lnbeconomy.market.sold", result.quantity, name(entry), Texts.amount(result.total, it)).withStyle(ChatFormatting.GREEN),
+                    say(
+                        it, Component.translatable("economy.lnbeconomy.market.sold", result.quantity, name(entry), Texts.amount(result.total, it)).withStyle(ChatFormatting.GREEN),
                     )
-                    if (result.capped) it.sendSystemMessage(Component.translatable("economy.lnbeconomy.market.capped").withStyle(ChatFormatting.GOLD))
+                    if (result.capped) say(it, Component.translatable("economy.lnbeconomy.market.capped").withStyle(ChatFormatting.GOLD))
                     it.playNotifySound(SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.PLAYERS, 0.6f, 1f)
                 }
             }
@@ -164,10 +167,10 @@ object MarketOrders {
             is Outcome.Refused -> refused(server, entry, player, outcome.result)
             is Outcome.Done -> {
                 val result = outcome.decode<MarketOrderResult>()
-                settle(server, result)
+                settle(server, uuid, result)
                 player?.let {
-                    it.sendSystemMessage(
-                        Component.translatable("economy.lnbeconomy.market.bought", result.quantity, name(entry), Texts.amount(result.total, it)).withStyle(ChatFormatting.GREEN),
+                    say(
+                        it, Component.translatable("economy.lnbeconomy.market.bought", result.quantity, name(entry), Texts.amount(result.total, it)).withStyle(ChatFormatting.GREEN),
                     )
                     it.playNotifySound(SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.PLAYERS, 0.6f, 1f)
                 }
@@ -179,9 +182,11 @@ object MarketOrders {
     }
 
     /** What an order's answer tells us: the account's balance and the item's stock. */
-    private fun settle(server: MinecraftServer, result: MarketOrderResult) {
+    private fun settle(server: MinecraftServer, uuid: UUID, result: MarketOrderResult) {
         PlayerAccounts.applyBalance(server, result.account.accountId, result.account.balance)
         Markets.state.setStock(result.item, result.stock)
+        MarketViews.onStocks(server, listOf(result.item))
+        MarketViews.afterOrder(server, uuid)
     }
 
     private fun name(entry: JournalEntry): Component = Component.literal(entry.data[Data.NAME].orEmpty())
@@ -197,7 +202,7 @@ object MarketOrders {
                 op.sendSystemMessage(Component.translatable("economy.lnbeconomy.market.held", entry.key).withStyle(ChatFormatting.RED))
             }
         }
-        player?.sendSystemMessage(Component.translatable("economy.lnbeconomy.market.delayed").withStyle(ChatFormatting.GRAY))
+        player?.let { say(it, Component.translatable("economy.lnbeconomy.market.delayed").withStyle(ChatFormatting.GRAY)) }
     }
 
     private fun refused(server: MinecraftServer, entry: JournalEntry, player: ServerPlayer?, result: ApiResult<*>) {
@@ -216,8 +221,8 @@ object MarketOrders {
                 server.execute {
                     if (target.hasDisconnected()) return@execute
                     val now = (quote as? ApiResult.Ok)?.body?.total
-                    target.sendSystemMessage(
-                        (if (now != null) Component.translatable("economy.lnbeconomy.market.price_changed", Texts.amount(now, target))
+                    say(
+                        target, (if (now != null) Component.translatable("economy.lnbeconomy.market.price_changed", Texts.amount(now, target))
                         else Component.translatable("economy.lnbeconomy.problem.priceChanged")).withStyle(ChatFormatting.RED),
                     )
                 }
@@ -228,15 +233,21 @@ object MarketOrders {
             Problems.ZERO_PAYOUT -> Component.translatable("economy.lnbeconomy.problem.zeroPayout")
             else -> Texts.problem(result)
         }
-        target.sendSystemMessage(Component.translatable("economy.lnbeconomy.market.refused", reason).withStyle(ChatFormatting.RED))
+        say(target, Component.translatable("economy.lnbeconomy.market.refused", reason).withStyle(ChatFormatting.RED))
         target.playNotifySound(SoundEvents.NOTE_BLOCK_BASS.value(), SoundSource.PLAYERS, 1f, 0.5f)
     }
 
     private fun JournalEntry.transferDirection(): String? = body.get("direction")?.asString
 
+    /** Chat and the screen's toast: red is a failure, anything else is good news or a note. */
+    private fun say(player: ServerPlayer, message: Component) {
+        player.sendSystemMessage(message)
+        MarketViews.toast(player, message.style.color?.value != ChatFormatting.RED.color, message)
+    }
+
     private fun cant(player: ServerPlayer, why: Cant) {
         val args = why.args.map { if (it is Component || it is Number) it else it.toString() }.toTypedArray()
-        player.sendSystemMessage(Component.translatable("economy.lnbeconomy.market.cant", Component.translatable(why.key, *args)).withStyle(ChatFormatting.RED))
+        say(player, Component.translatable("economy.lnbeconomy.market.cant", Component.translatable(why.key, *args)).withStyle(ChatFormatting.RED))
         player.playNotifySound(SoundEvents.NOTE_BLOCK_BASS.value(), SoundSource.PLAYERS, 1f, 0.5f)
     }
 }

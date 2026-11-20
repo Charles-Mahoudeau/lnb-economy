@@ -3,6 +3,7 @@ package fr.bde_teknantes.lnb.economy.api
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import fr.bde_teknantes.lnb.warden.common.api.ApiResult
+import fr.bde_teknantes.lnb.economy.market.MarketHistoryView
 import fr.bde_teknantes.lnb.economy.market.MarketPlayerWindow
 import fr.bde_teknantes.lnb.economy.market.MarketQuote
 import fr.bde_teknantes.lnb.economy.market.MarketQuoteBody
@@ -112,6 +113,10 @@ object EconomyApi {
     /** A player's selling windows. */
     fun marketPlayer(uuid: UUID): CompletableFuture<ApiResult<MarketPlayerWindow>> =
         call("market window", "GET", "$BASE/market/players/$uuid")
+
+    /** The public price history of an item. [period] is `24h`, `7d`, `30d` or `1y`. */
+    fun marketHistory(item: String, period: String): CompletableFuture<ApiResult<MarketHistoryView>> =
+        call("market history", "GET", "/api/market/items/${encode(item)}/history?period=${encode(period)}")
 
     /** The site's own price, changing nothing. */
     fun marketQuote(body: MarketQuoteBody): CompletableFuture<ApiResult<MarketQuote>> =
