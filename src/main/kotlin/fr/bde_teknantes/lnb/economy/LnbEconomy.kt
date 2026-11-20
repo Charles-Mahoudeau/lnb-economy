@@ -4,6 +4,7 @@ import com.mojang.logging.LogUtils
 import fr.bde_teknantes.lnb.economy.account.PlayerAccounts
 import fr.bde_teknantes.lnb.economy.account.SharedAccounts
 import fr.bde_teknantes.lnb.economy.api.EconomyEvents
+import fr.bde_teknantes.lnb.economy.market.MarketOrders
 import fr.bde_teknantes.lnb.economy.market.Markets
 import fr.bde_teknantes.lnb.economy.auction.Auctions
 import fr.bde_teknantes.lnb.economy.casino.CasinoLinks
@@ -55,6 +56,7 @@ class LnbEconomy(modBus: IEventBus, container: ModContainer) {
         Shops.register()
         Trades.register()
         Auctions.register()
+        MarketOrders.register()
         MobDrops.register()
         Licenses.register()
         modBus.addListener(ShopItemHandler::register)

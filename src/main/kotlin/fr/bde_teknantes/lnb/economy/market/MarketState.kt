@@ -64,6 +64,11 @@ class MarketState(private val clock: () -> Long = System::currentTimeMillis) {
         return false
     }
 
+    /** The stock an order's answer gives, measured now. Ignored for an item we don't list. */
+    fun setStock(id: String, stock: Double) {
+        if (id in items) stocks[id] = Stock(stock, clock())
+    }
+
     /** `market-config`: [revision] is ahead of ours, so the state must be read again. */
     fun needsRefresh(revision: Long): Boolean = view == null || revision > this.revision
 
