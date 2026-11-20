@@ -23,6 +23,7 @@ the mod on a player's computer only talks to the server. The contract is `docs/e
   - `/trade <player>`: asks to trade, from any distance (a key, unbound by default, asks the player in front of you).
   - `/hdv` (`/ah`): opens the auction house, unless `features.auctionsCommand` is off.
   - `/mailbox` (`/courrier`): collects items that didn't fit in your inventory.
+  - `/market`: opens the Market, or a "closed" screen that opens the Market by itself when it reopens.
   - `/economy notify on|off`: messages when someone buys from or sells to your shops, and when one of your auction
     house listings sells.
   - `/economy status|pending|retry <key>|casino <#account> [outstanding <value>]`: operators.
@@ -73,6 +74,16 @@ the mod on a player's computer only talks to the server. The contract is `docs/e
   the server claims with a key and hands over; unsold items come back the same way from "To collect". The seller is
   told when a listing sells, right away or when they next join. It opens with `/hdv`, an auction house podium
   (operators only, unbreakable outside creative) or the auctioneer NPC.
+- **Market.** `/market` opens a screen to sell items to the Market and buy them from it, at the prices the site
+  computes from each item's stock. The server reads the Market's state, events and recipes from the site and relays
+  them; clients never call the site. The screen lists the items with their price for 1 and for 64 and their change
+  against the base price, with a search, a sort and the player's own efficiency tier. An order panel shows a price
+  history chart (24 h, 7 d, 30 d, 1 y), the quantity (chips, "All" or a typed number) and the exact total, priced by
+  the same formula as the site and corrected from the site's answer if it differs. Only plain items are sold (no
+  enchantment, damage, name or contents); a purchase is delivered through the mailbox. A sale is held in the journal
+  entry while the site decides, so a refusal or a crash gives the items back, and a purchase is claimed once, even
+  after a restart. Above `pay.confirmAbove` a second click confirms. When the site turns the Market off the screen
+  says so, and the "Pay to" choice on sales appears when the site supports it (`settings.saleAccount`).
 - **Mob drops.** A hostile mob killed by a player has a chance (10 %) to leave them a few LNBits (1 to 10), minted by
   the site on their personal account right away. Mobs from spawners give nothing by default.
 - **Mailbox.** Items owed to a player (bought chips or items, items handed back) go straight to the inventory; what

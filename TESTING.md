@@ -321,3 +321,31 @@ Upgrade a world that ran 0.2.x: a shop priced 12 LNBits, and one money call wait
 | 13.7 | Kill a zombie (see 11) | "+N from the mob" with N whole; the balance rises by exactly N |
 | 13.8 | Buy 5 LNBits of chips, play, cash them | Chips value 5; the account goes down 5 and back up by the cash-out, to the cent |
 | 13.9 | `/economy casino #test-casino` | Balance, chips and free balance in whole LNBits, free = balance - chips - held |
+
+## 14. Market (0.4.0)
+
+On a server against a site with the Market on, with a linked player, a second player who is only a viewer of a shared account, and one banned player. The site's `economy.market`, `economy.market.sell` and `economy.market.buy` flags are what you turn on and off.
+
+| # | Do | Expect |
+|---|----|--------|
+| 14.1 | Market off on the site, `/market` | A "closed" screen, no chat error, no "API unreachable" alert for operators |
+| 14.2 | Turn the Market on, wait up to a minute with the closed screen open | The screen turns into the Market by itself |
+| 14.3 | Sell tab, then Buy tab; search, sort by name, price and change | Tabs are told apart, the list does not shuffle while sorted by change, items held by the player are brighter on Sell |
+| 14.4 | Open an item: hover the chart, switch the period chips | A value and a date under the cursor; each period loads, a second look at the same period is instant |
+| 14.5 | Sell 1, 64, "All" and a typed quantity | The total matches the site's payout to the cent, the balance and stock move, the toast and chat read the same sale |
+| 14.6 | Sell a damaged tool, a renamed item, an enchanted book, a shulker box with items | Refused by the mod without calling the site, with a reason |
+| 14.7 | A sale across the first tier threshold | The average price shows the split; the Efficiency screen shows the player's meter moved |
+| 14.8 | Change the stock from the admin between opening an item and clicking | The new total is shown, the items are back, a second click sells at it |
+| 14.9 | Mint budget very low, then sell | A partial payout with the "capped" message, then a refusal |
+| 14.10 | Block the network for 20 s right after clicking Sell | The items stay held, "delayed" is shown once, the player is paid once when it clears |
+| 14.11 | Stop the server in the middle of a sale | After the restart the sale settles once; no item is lost or doubled |
+| 14.12 | Buy 1, 64 and 2,304 with a nearly full inventory | What fits is handed over, the rest is in `/mailbox` |
+| 14.13 | Crash the server just after a purchase was answered | After the restart the items are claimed once |
+| 14.14 | Buy from a shared account as a viewer | The account is not offered; a forged order is refused `notAllowed` |
+| 14.15 | Buy above the balance, as a banned player, with a flag off | The right message each time; nothing moves; a sale gives the items back |
+| 14.16 | An order above `pay.confirmAbove` | The first click asks, the second sends |
+| 14.17 | Change a price or turn an item off in the admin | The screen follows within seconds; a disabled item disappears |
+| 14.18 | Sell with the site's `settings.saleAccount` on, then off | The "Pay to" choice appears with it and goes without it; the sale pays the chosen account |
+| 14.19 | Close the screen, relog, open it as a second player at the same time | Each sees their own window and balance; closing stops the updates |
+| 14.20 | Switch the game to French | Every Market text and problem message is translated |
+
