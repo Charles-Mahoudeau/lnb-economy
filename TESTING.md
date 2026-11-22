@@ -335,6 +335,7 @@ On a server against a site with the Market on, with a linked player, a second pl
 | 14.5 | Sell 1, 64, "All" and a typed quantity | The total matches the site's payout to the cent, the balance and stock move, the toast and chat read the same sale |
 | 14.6 | Sell a damaged tool, a renamed item, an enchanted book, a shulker box with items | Refused by the mod without calling the site, with a reason |
 | 14.7 | A sale across the first tier threshold | The average price shows the split; the Efficiency screen shows the player's meter moved |
+| 14.7b | Open an item the player holds none of, then one held in small number, on Sell; sell a stack that crosses a threshold | With too few items "You get" shows "-" and only the red note; a stack across a threshold shows "Efficiency: −N %" in gold, N matching the drop against the same sale at 100 % |
 | 14.8 | Change the stock from the admin between opening an item and clicking | The new total is shown, the items are back, a second click sells at it |
 | 14.9 | Mint budget very low, then sell | A partial payout with the "capped" message, then a refusal |
 | 14.10 | Block the network for 20 s right after clicking Sell | The items stay held, "delayed" is shown once, the player is paid once when it clears |

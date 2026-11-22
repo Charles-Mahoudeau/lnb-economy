@@ -485,6 +485,7 @@
   "gui.lnbeconomy.market.cost": "Coût",
   "gui.lnbeconomy.market.per_item": "%s l’unité",
   "gui.lnbeconomy.market.rate": "Taux : %s",
+  "gui.lnbeconomy.market.efficiency": "Efficacité : −%s %%",
   "gui.lnbeconomy.market.pay_to": "Payer avec",
   "gui.lnbeconomy.market.after": "Solde après : %s",
   "gui.lnbeconomy.market.do_sell": "Vendre",

@@ -155,6 +155,12 @@ object ClientMarket {
         entry.curve, catalog?.sigma ?: 0.0, stockNow(entry), quantity, window(entry.data.tier), catalog?.mintRemaining ?: Long.MAX_VALUE,
     )
 
+    /** The same sale with no efficiency penalty (every item at 100 %), to tell what the player's tier costs from the spread. */
+    fun flatSellQuote(entry: Entry, quantity: Int): MarketPricing.Sale = MarketPricing.sell(
+        entry.curve, catalog?.sigma ?: 0.0, stockNow(entry), quantity,
+        MarketPricing.Window(0.0, Double.MAX_VALUE, Double.MAX_VALUE, 1.0, 1.0),
+    )
+
     fun buyQuote(entry: Entry, quantity: Int): MarketPricing.Purchase =
         MarketPricing.buy(entry.curve, catalog?.sigma ?: 0.0, stockNow(entry), quantity)
 

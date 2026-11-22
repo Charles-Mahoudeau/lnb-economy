@@ -485,6 +485,7 @@
   "gui.lnbeconomy.market.cost": "Cost",
   "gui.lnbeconomy.market.per_item": "%s each",
   "gui.lnbeconomy.market.rate": "Rate: %s",
+  "gui.lnbeconomy.market.efficiency": "Efficiency: −%s %%",
   "gui.lnbeconomy.market.pay_to": "Pay to",
   "gui.lnbeconomy.market.after": "Balance after: %s",
   "gui.lnbeconomy.market.do_sell": "Sell",
