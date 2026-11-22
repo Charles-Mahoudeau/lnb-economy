@@ -292,13 +292,18 @@ class MarketScreen : Screen(Component.translatable("gui.lnbeconomy.market.title"
         addRenderableWidget(MarketUi.Button(x0 + 172, oy + 134, 128, 18, actionLabel, MarketUi.Button.Kind.ACTION) { submit(entry) }.also { it.active = ready(entry) })
     }
 
-    private class Priced(val cents: Long, val perItem: Double, val rate: String, val sale: MarketPricing.Sale?)
+    /** [efficiency] is what the player's tier takes off a sale, as a fraction of the payout at 100 % (0 when nothing). */
+    private class Priced(val cents: Long, val perItem: Double, val rate: String, val sale: MarketPricing.Sale?, val efficiency: Double = 0.0)
 
     private fun priced(entry: Entry): Priced? {
         if (quantity < 1) return null
+        // A sale of more than the player holds can't happen: no quote for it, only the red note says why.
+        if (selling && quantity > heldOf(entry)) return null
         return if (selling) {
             val sale = ClientMarket.sellQuote(entry, quantity)
-            Priced(sale.totalCents, sale.totalCents / 100.0 / quantity, rateText(sale), sale)
+            val flat = ClientMarket.flatSellQuote(entry, quantity).totalCents
+            val efficiency = if (flat > 0) (1.0 - sale.totalCents.toDouble() / flat).coerceIn(0.0, 1.0) else 0.0
+            Priced(sale.totalCents, sale.totalCents / 100.0 / quantity, rateText(sale), sale, efficiency)
         } else {
             val purchase = ClientMarket.buyQuote(entry, quantity)
             Priced(purchase.totalCents, purchase.perItem, "", null)
@@ -356,7 +361,9 @@ class MarketScreen : Screen(Component.translatable("gui.lnbeconomy.market.title"
         g.drawString(font, if (price != null) coins(price.cents) else "-", rx, oy + 11, PixelBox.GOLD, false)
         price?.let {
             g.drawString(font, Component.translatable("gui.lnbeconomy.market.per_item", coins((it.perItem * 100).roundToInt().toLong())), rx, oy + 26, PixelBox.TEXT, false)
-            if (it.rate.isNotEmpty()) g.drawString(font, Component.translatable("gui.lnbeconomy.market.rate", it.rate), rx, oy + 37, PixelBox.TEXT, false)
+            val cut = (it.efficiency * 100).roundToInt()
+            if (cut > 0) g.drawString(font, Component.translatable("gui.lnbeconomy.market.efficiency", cut), rx, oy + 37, PixelBox.GOLD, false)
+            else if (it.rate.isNotEmpty()) g.drawString(font, Component.translatable("gui.lnbeconomy.market.rate", it.rate), rx, oy + 37, PixelBox.TEXT, false)
         }
         g.drawString(font, Component.translatable("gui.lnbeconomy.market.pay_to"), rx, oy + 52, PixelBox.MUTED, false)
         val pay = currentAccount()
